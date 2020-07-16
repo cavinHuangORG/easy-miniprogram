@@ -67,7 +67,7 @@ function watch(cb) {
     [
         gulp.watch('src/**/*.wxml', wxml),
         gulp.watch('src/**/*.wxs', wxs),
-        gulp.watch(['src/**/*.{wxss,styl,stylus}', '!src/stylus/**/*.{styl, stylus}', '!src/app.wxss'], css),
+        gulp.watch(['src/**/*.{wxss,scss,styl,stylus}', '!src/styles/**/*.{styl, stylus}', '!src/app.wxss'], css),
         gulp.watch('src/**/*.js', gulp.parallel(eslint, js)),
         gulp.watch(['src/**/*.json', 'src/app.wxss'], transfer),
         gulp.watch(['src/app.json', 'src/project/*/pages.json'], mergerJson)

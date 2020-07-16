@@ -1,3 +1,4 @@
 <view>
     <hello-word></hello-word>
+    <view class="test">ssssss</view>
 </view>

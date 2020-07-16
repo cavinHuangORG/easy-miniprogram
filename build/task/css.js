@@ -4,6 +4,7 @@ import urlReplace from '../plugins/gulp-url-replace';
 import variableReject from '../plugins/variableReject';
 import postcss from 'gulp-postcss';
 import stylus from 'gulp-stylus';
+import sass from 'gulp-sass';
 import rename from 'gulp-rename';
 import pathAlias from 'gulp-miniprogram-path-alias';
 import importWxss from '../plugins/gulp-css-import-wxss';
@@ -13,7 +14,7 @@ import logger from '../utils/logger';
 
 export const css = cb => {
     let start = new Date();
-    return gulp.src(['src/**/*.{wxss,styl,stylus}', '!src/stylus/**/*.{styl, stylus}', '!src/app.wxss'], {
+    return gulp.src(['src/**/*.{wxss,scss,styl,stylus}', '!src/styles/**/*.{styl,scss,stylus}', '!src/app.wxss'], {
         since: gulp.lastRun(css)
     })
         .pipe(plumber())
@@ -22,6 +23,7 @@ export const css = cb => {
         .pipe(variableReject(config.variableReject))
         .pipe(pathAlias(alias))
         .pipe(stylus())
+        .pipe(sass())
         .pipe(postcss())
         .pipe(importWxss())
         .pipe(pathAlias(alias))
