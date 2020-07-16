@@ -43,7 +43,9 @@ function initWxp() {
             // 挂载方法
             // 添加promise调用方式支持
             wxp[handleName] = function (option) {
-                option = option || {};
+                if (!option.promise) {
+                    return _wx[handleName](option);
+                }
                 return new Promise((resolve, reject) => {
                     // 保留 success、fail 引用
                     let _success = option.success;
@@ -71,6 +73,7 @@ function initWxp() {
  * @param {string|Object<any>} handleName 类型为string时，作为调用的方法名，
  *                                        类型为object时，为 option， handleName为 option.handleName
  * @param {object<any>} option 配置
+ *                      option.promise 默认：true 返回一个promise 否则返回原wx方法
  */
 function wxp(handleName, option) {
     // 由于不确定 wx 在什么阶段完成注入，小程序并没有提供相关的判断依据
@@ -79,11 +82,15 @@ function wxp(handleName, option) {
     // 但是用户的界面已经加载完成渲染完成界面，队列里面存在了 showLoading 和 hideLoading，
     // 用户在交互的过程中突然看到加载弹框一闪而过，从体验上来说十分不友好，
     // 所以只在每次调用前做一次判断即可
+    option = option || {};
     getWx();
     if (isObject(handleName)) {
         handleName = handleName.handleName;
         delete handleName.handleName;
         option = handleName;
+    }
+    if (!hasOwn(option, 'promise')) {
+        option.promise = true;
     }
     if (!handleName) {
         throw new Error('wxp need handleName');
@@ -96,13 +103,15 @@ function wxp(handleName, option) {
     if (has && canI) {
         return wxp[handleName](option);
     } else {
-        /* eslint-disable */
-        if (!has) {
-            return Promise.reject({status: -300, error: handleName + ' is not found'});
-        } else if (!canI) {
-            return Promise.reject({status: -200, error: handleName + ' can\'t use'});
+        if (option.promise) {
+            if (!has) {
+                return new Error({status: -300, error: handleName + ' is not found'});
+            } else if (!canI) {
+                return new Error({status: -200, error: handleName + ' can\'t use'});
+            }
+        } else {
+            return false;
         }
-        /* eslint-enable */
     }
 }
 
